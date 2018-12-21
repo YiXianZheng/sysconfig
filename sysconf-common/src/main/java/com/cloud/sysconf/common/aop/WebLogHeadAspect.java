@@ -49,10 +49,10 @@ public class WebLogHeadAspect {
     @Autowired
     private RedisClient redisClient;
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private static Logger logger = LoggerFactory.getLogger(WebLogHeadAspect.class);
 
-    ThreadLocal<Long> startTime = new ThreadLocal<>();
-    ThreadLocal<String> sysLogTime = new ThreadLocal<>();
+    private ThreadLocal<Long> startTime = new ThreadLocal<>();
+    private ThreadLocal<String> sysLogTime = new ThreadLocal<>();
 
     private static final String PRE_TAG = "(----> aop <----)************** ";
 
@@ -66,13 +66,6 @@ public class WebLogHeadAspect {
         // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-
-        // 记录下请求内容
-//        logger.info(PRE_TAG + "(doBefore) URL : " + request.getRequestURL().toString());
-//        logger.info(PRE_TAG + "(doBefore) HTTP_METHOD : " + request.getMethod());
-//        logger.info(PRE_TAG + "(doBefore) IP : " + request.getRemoteAddr());
-//        logger.info(PRE_TAG + "(doBefore) CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-//        logger.info(PRE_TAG + "(doBefore) ARGS : " + Arrays.toString(joinPoint.getArgs()));
 
         String userId = redisClient.Gethget(RedisConfig.USER_TOKEN_DB, request.getHeader("t1"), "userId");
         String userName = redisClient.Gethget(RedisConfig.USER_TOKEN_DB, request.getHeader("t1"), "userName");
@@ -99,9 +92,6 @@ public class WebLogHeadAspect {
 
     @AfterReturning(returning = "ret", pointcut = "webLog()")
     public void doAfterReturning(Object ret) throws Throwable {
-        // 处理完请求，返回内容
-//        logger.info(PRE_TAG + "(doAfterReturning) RESPONSE : " + ret);
-//        logger.info(PRE_TAG + "(doAfterReturning) SPEND TIME : " + (System.currentTimeMillis() - startTime.get()));
 
         redisClient.SetHsetJedis(RedisConfig.SYS_LOG_DB, sysLogTime.get(), "response", ret.toString());
         redisClient.SetHsetJedis(RedisConfig.SYS_LOG_DB, sysLogTime.get(), "spendTime", (System.currentTimeMillis() - startTime.get())+"");

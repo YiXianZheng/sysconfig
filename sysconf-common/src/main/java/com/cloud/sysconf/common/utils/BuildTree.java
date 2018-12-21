@@ -2,7 +2,6 @@ package com.cloud.sysconf.common.utils;
 
 import com.cloud.sysconf.common.dto.HeaderInfoDto;
 import com.cloud.sysconf.common.dto.SysMenuDto;
-import com.cloud.sysconf.common.dto.SysOfficeDto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,41 +58,6 @@ public class BuildTree {
     }
 
     /**
-     * 创建组织树形结构
-     * @param nodes
-     * @return
-     */
-    public static List<SysOfficeDto> buildOffice(List<SysOfficeDto> nodes) {
-
-        if(nodes == null){
-            return null;
-        }
-        List<SysOfficeDto> res = new ArrayList<>();
-
-        for (SysOfficeDto children : nodes) {
-
-            children.setKey(children.getId());
-            String pid = children.getParentId();
-            if ("0".equals(pid)) {
-                res.add(children);
-                continue;
-            }
-
-            for (SysOfficeDto parent : nodes) {
-                String id = parent.getId();
-                if (id != null && id.equals(pid)) {
-
-                    parent.getChildren().add(children);
-
-                    continue;
-                }
-            }
-        }
-
-        return res;
-    }
-
-    /**
      * 创建菜单树形结构  显示系统
      * @param nodes
      * @return
@@ -147,53 +111,6 @@ public class BuildTree {
         }
 
         return res;
-    }
-
-    /**
-     * 返回特定格式的组织机构
-     * @param nodes
-     * @return
-     */
-    public static List<Map<String, Object>> buildOfficeMap(List<SysOfficeDto> nodes) {
-
-        if(nodes == null){
-            return null;
-        }
-        List<Map<String, Object>> topNodes = new ArrayList<>();
-
-        Map<String, Object> node = new HashMap<>();
-        node.put("value", "");
-        node.put("label", "请选择");
-
-        topNodes.add(node);
-
-        for (SysOfficeDto parent : nodes) {
-
-            String pid = parent.getParentId();
-            if ("0".equals(pid)) {
-                node = new HashMap<>();
-                node.put("value", parent.getId());
-                node.put("label", parent.getName());
-
-                List<Map<String, Object>> childrens = new ArrayList<>();
-                for (SysOfficeDto children : nodes) {
-                    String id = children.getParentId();
-                    if (id != null && id.equals(parent.getId())) {
-                        Map<String, Object> childs = new HashMap<>();
-                        childs.put("value", children.getId());
-                        childs.put("label", children.getName());
-
-                        childrens.add(childs);
-                    }
-                }
-                node.put("children", childrens);
-                topNodes.add(node);
-            }else{
-                continue;
-            }
-        }
-
-        return topNodes;
     }
 
 }

@@ -55,13 +55,6 @@ public interface SysRoleService extends BaseMybatisService<SysRole, String> {
     ReturnVo saveRoleUserCancel(String userId, String roleId);
 
     /**
-     * 获取编辑角色的配置信息
-     * @param headerInfoDto
-     * @return
-     */
-    ReturnVo getConfig(HeaderInfoDto headerInfoDto);
-
-    /**
      * 获取角色列表
      * @param officeId
      * @return

@@ -422,6 +422,7 @@ public class RedisClient {
 
         } catch (Exception e) {
             isBroken = true;
+            e.printStackTrace();
         } finally {
             release(jedis, isBroken);
         }

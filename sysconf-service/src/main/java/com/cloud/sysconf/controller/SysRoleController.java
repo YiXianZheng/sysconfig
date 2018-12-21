@@ -43,16 +43,6 @@ public class SysRoleController extends BaseController {
     }
 
     /**
-     * 获取编辑角色的配置信息
-     * @return
-     */
-    @RequestMapping("/config")
-    public ApiResponse config(@RequestHeader HttpHeaders headers){
-        HeaderInfoDto headerInfoDto = this.getHeaderInfo(headers);
-        return this.toApiResponse(sysRoleService.getConfig(headerInfoDto));
-    }
-
-    /**
      * 新增或保存系统角色
      * @param headers
      * @param sysRoleDto

@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.cloud.sysconf.common.basePDSC.BaseMybatisServiceImpl;
 import com.cloud.sysconf.common.dto.HeaderInfoDto;
 import com.cloud.sysconf.common.dto.SysMenuDto;
-import com.cloud.sysconf.common.dto.SysOfficeDto;
 import com.cloud.sysconf.common.dto.SysRoleDto;
 import com.cloud.sysconf.common.enums.RoleTypeEnum;
 import com.cloud.sysconf.common.utils.ResponseCode;
@@ -14,11 +13,9 @@ import com.cloud.sysconf.common.vo.ReturnVo;
 import com.cloud.sysconf.dao.SysRoleDao;
 import com.cloud.sysconf.dao.SysUserRoleDao;
 import com.cloud.sysconf.po.SysMenu;
-import com.cloud.sysconf.po.SysOffice;
 import com.cloud.sysconf.po.SysRole;
 import com.cloud.sysconf.po.SysUserRole;
 import com.cloud.sysconf.service.SysMenuService;
-import com.cloud.sysconf.service.SysOfficeService;
 import com.cloud.sysconf.service.SysRoleMenuService;
 import com.cloud.sysconf.service.SysRoleService;
 import org.apache.commons.lang.StringUtils;
@@ -39,8 +36,6 @@ public class SysRoleServiceImpl extends BaseMybatisServiceImpl<SysRole, String, 
 
     @Autowired
     private SysRoleDao sysRoleDao;
-    @Autowired
-    private SysOfficeService sysOfficeService;
     @Autowired
     private SysMenuService sysMenuService;
     @Autowired
@@ -73,16 +68,6 @@ public class SysRoleServiceImpl extends BaseMybatisServiceImpl<SysRole, String, 
             BeanUtils.copyProperties(sysRole, sysRoleDto);
 
             sysRoleDto.setRoleType(RoleTypeEnum.getRoleNameByCode(sysRoleDto.getRoleType()));
-            SysOffice sysOffice = sysOfficeService.getById(sysRole.getOfficeId());
-            if(sysOffice != null){
-                String temp = "";
-                if("0".equals(sysOffice.getParentId())){
-                    SysOffice parentOffice = sysOfficeService.getById(sysRole.getOfficeId());
-                    temp = parentOffice.getName() + " > ";
-                }
-                temp += sysOffice.getName();
-                sysRoleDto.setOfficeInfo(temp);
-            }
 
             roles.add(sysRoleDto);
         }
@@ -214,27 +199,6 @@ public class SysRoleServiceImpl extends BaseMybatisServiceImpl<SysRole, String, 
         sysUserRoleDao.add(sysUserRole);
 
         return ReturnVo.returnSuccess();
-    }
-
-    @Override
-    public ReturnVo getConfig(HeaderInfoDto headerInfoDto) {
-         ReturnVo returnVo = sysMenuService.getByRole(headerInfoDto.getRoleId());
-         if(ReturnVo.SUCCESS != returnVo.code){
-             return returnVo;
-         }
-         List<SysMenuDto> menus = (List<SysMenuDto>) returnVo.object;
-
-         ReturnVo returnVo1 = sysOfficeService.getAllUsable();
-         if(ReturnVo.SUCCESS != returnVo1.code){
-             return returnVo1;
-         }
-         List<SysOfficeDto> offices = (List<SysOfficeDto>) returnVo1.object;
-
-         Map<String, Object> config = new HashMap<>();
-         config.put("menus", menus);
-         config.put("offices", offices);
-
-         return ReturnVo.returnSuccess(config);
     }
 
     @Override
